@@ -1,4 +1,4 @@
-package org.example.chapter_8;
+package org.example.chapter_8.v_A_13;
 import java.util.HashSet;
 
 public class Texts {
@@ -6,7 +6,6 @@ public class Texts {
         String text = "дед мотор ротор кошка радар авто жар";
         printUniqueWords(text);
     }
-
     public static void printUniqueWords(String text) {
         HashSet<String> uniqueWords = new HashSet<>();
         String[] words = text.split("\\s+");
@@ -16,8 +15,6 @@ public class Texts {
                 uniqueWords.add(word);
             }
         }
-
-
         if (uniqueWords.isEmpty()) {
             System.out.println("Нет слов, у которых первая и последняя буквы совпадают.");
         } else {
