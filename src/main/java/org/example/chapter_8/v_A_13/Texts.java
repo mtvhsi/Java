@@ -1,5 +1,6 @@
 package org.example.chapter_8.v_A_13;
 import java.util.HashSet;
+import java.util.Set;
 
 public class Texts {
     public static void main(String[] args) {
@@ -7,7 +8,7 @@ public class Texts {
         printUniqueWords(text);
     }
     public static void printUniqueWords(String text) {
-        HashSet<String> uniqueWords = new HashSet<>();
+        Set<String> uniqueWords = new HashSet<>();
         String[] words = text.split("\\s+");
 
         for (String word : words) {
