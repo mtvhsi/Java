@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-class CustomEx  extends Exception {
-    public CustomEx (String n) {
+class CustomException  extends Exception {
+    public CustomException (String n) {
         super(n);
     }
 }
@@ -28,7 +28,7 @@ public class FloatNum {
             double sum = calculateSum(nums);
             double avg = sum / nums.size();
             System.out.printf("Сумма: %.2f, Среднее: %.2f%n", sum, avg);
-        } catch (CustomEx  e) {
+        } catch (CustomException  e) {
             System.err.println("Ошибка: " + e.getMessage());
         } catch (OutOfMemoryError e) {
             System.err.println("Недостаточно памяти для выполнения программы.");
@@ -38,14 +38,14 @@ public class FloatNum {
     }
 
 
-    protected static List<Double> readFFile(String fileName) throws CustomEx  {
+    protected static List<Double> readFFile(String fileName) throws CustomException  {
         List<Double> nums = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = br.readLine()) != null) {
                 try {
-                    String[] parts = line.trim().split(","); // Разделяем строку на число и локаль
+                    String[] parts = line.trim().split(","); 
                     if (parts.length != 2) {
                         System.err.println("Некорректный формат записи: " + line);
                         continue;
@@ -57,9 +57,9 @@ public class FloatNum {
                 }
             }
         } catch (FileNotFoundException e) {
-            throw new CustomEx ("Файл не найден: " + fileName);
+            throw new CustomException ("Файл не найден: " + fileName);
         } catch (IOException e) {
-            throw new CustomEx  ("Ошибка при чтении файла: " + e.getMessage());
+            throw new CustomException  ("Ошибка при чтении файла: " + e.getMessage());
         }
 
         return nums;
