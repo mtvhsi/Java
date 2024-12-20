@@ -29,22 +29,22 @@ public class Server {
     }
 
     private void start() {
-        System.out.println("Сервер активен...");
+        System.out.println("Сервер запущен...");
         try (ServerSocket srvSocket = new ServerSocket(PORT)) {
             Socket p1Socket = srvSocket.accept();
-            System.out.println("Игрок 1 подключён.");
+            System.out.println("Игрок1 подключён.");
             Socket p2Socket = srvSocket.accept();
-            System.out.println("Игрок 2 подключён.");
+            System.out.println("Игрок2 подключён.");
 
-            new PHandler(p1Socket, "Игрок 1").start();
-            new PHandler(p2Socket, "Игрок 2").start();
+            new PHandler(p1Socket, "Игрок1").start();
+            new PHandler(p2Socket, "Игрок2").start();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private synchronized String currentPlayer() {
-        return pl1Turn ? "Игрок 1" : "Игрок 2";
+        return pl1Turn ? "Игрок1" : "Игрок2";
     }
 
     private synchronized void switchPlayer() {
@@ -80,7 +80,7 @@ public class Server {
                         }
                     }
 
-                    out.println("Ваш ход! Введите координаты (например, 1 2):");
+                    out.println("Ваш ход! Введите координаты (например,1 2):");
                     String input = in.readLine();
                     if (input == null) {
                         break;
