@@ -174,9 +174,9 @@ public class TriangleDatabase {
 
     private boolean isTriangleOfType(Triangle triangle, String type) {
         switch (type) {
-            case "isosceles":
+            case "ravn":
                 return triangle.isIsosceles();
-            case "equilateral":
+            case "ravnstoron":
                 return triangle.isEquilateral();
             case "right":
                 return triangle.isRight();
