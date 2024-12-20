@@ -1,4 +1,5 @@
 package org.example.chapter_13;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,6 @@ public class TriangleDatabase {
             throw new SQLException("H2 Driver not found", e);
         }
     }
-
 
     private void createTable() throws SQLException {
         String createTableSQL = """
@@ -65,7 +65,6 @@ public class TriangleDatabase {
         return null;
     }
 
-
     public List<Triangle> getIsoscelesTriangles() throws SQLException {
         return getTrianglesByType("isosceles");
     }
@@ -75,19 +74,66 @@ public class TriangleDatabase {
     }
 
     public List<Triangle> getTrianglesInCircumcircle(double radius) throws SQLException {
-        //
+        String querySQL = """
+        SELECT x1, y1, x2, y2, x3, y3 FROM triangles
+    """;
+        List<Triangle> triangles = new ArrayList<>();
+        try (PreparedStatement pstmt = connection.prepareStatement(querySQL);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                Triangle triangle = new Triangle(
+                        rs.getFloat("x1"), rs.getFloat("y1"),
+                        rs.getFloat("x2"), rs.getFloat("y2"),
+                        rs.getFloat("x3"), rs.getFloat("y3")
+                );
+                if (triangle.fitsInCircumcircle(radius)) {
+                    triangles.add(triangle);
+                }
+            }
+        }
+        return triangles;
     }
 
     public List<Triangle> getTrianglesCloseToSumArea(float targetArea) throws SQLException {
-        //
+        String querySQL = """
+            SELECT x1, y1, x2, y2, x3, y3
+            FROM triangles
+            ORDER BY ABS(SUM(0.5 * Math.abs(x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2))) - ?) LIMIT 5
+        """;
+        List<Triangle> triangles = new ArrayList<>();
+        try (PreparedStatement pstmt = connection.prepareStatement(querySQL)) {
+            pstmt.setFloat(1, targetArea);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                triangles.add(new Triangle(rs.getFloat("x1"), rs.getFloat("y1"),
+                        rs.getFloat("x2"), rs.getFloat("y2"),
+                        rs.getFloat("x3"), rs.getFloat("y3")));
+            }
+        }
+        return triangles;
     }
 
     public List<Triangle> getRightTriangles() throws SQLException {
-        //
+        return getTrianglesByType("right");
     }
 
     public List<Triangle> getObtuseTrianglesWithAreaGreaterThan(float area) throws SQLException {
-        //
+        String querySQL = """
+            SELECT x1, y1, x2, y2, x3, y3 FROM triangles
+            WHERE 0.5 * ABS(x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) > ?
+            AND isObtuse(x1, y1, x2, y2, x3, y3) = true
+        """;
+        List<Triangle> triangles = new ArrayList<>();
+        try (PreparedStatement pstmt = connection.prepareStatement(querySQL)) {
+            pstmt.setFloat(1, area);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                triangles.add(new Triangle(rs.getFloat("x1"), rs.getFloat("y1"),
+                        rs.getFloat("x2"), rs.getFloat("y2"),
+                        rs.getFloat("x3"), rs.getFloat("y3")));
+            }
+        }
+        return triangles;
     }
 
     private List<Triangle> getTrianglesByType(String type) throws SQLException {
@@ -98,7 +144,9 @@ public class TriangleDatabase {
         try (PreparedStatement pstmt = connection.prepareStatement(querySQL);
              ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
-                Triangle triangle = new Triangle(rs.getFloat("x1"), rs.getFloat("y1"), rs.getFloat("x2"), rs.getFloat("y2"), rs.getFloat("x3"), rs.getFloat("y3"));
+                Triangle triangle = new Triangle(rs.getFloat("x1"), rs.getFloat("y1"),
+                        rs.getFloat("x2"), rs.getFloat("y2"),
+                        rs.getFloat("x3"), rs.getFloat("y3"));
                 if (isTriangleOfType(triangle, type)) {
                     triangles.add(triangle);
                 }
@@ -109,10 +157,12 @@ public class TriangleDatabase {
 
     private boolean isTriangleOfType(Triangle triangle, String type) {
         switch (type) {
-            case "равнобедренные":
+            case "isosceles":
                 return triangle.isIsosceles();
-            case "равносторонние":
+            case "equilateral":
                 return triangle.isEquilateral();
+            case "right":
+                return triangle.isRight();
             default:
                 return false;
         }
