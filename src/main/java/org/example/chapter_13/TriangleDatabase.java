@@ -51,19 +51,26 @@ public class TriangleDatabase {
 
     public Triangle getTriangleCloseToArea(float targetArea) throws SQLException {
         String querySQL = """
-            SELECT x1, y1, x2, y2, x3, y3
-            FROM triangles
-            ORDER BY ABS(0.5 * Math.abs(x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2)) - ?) LIMIT 1
-        """;
+        SELECT x1, y1, x2, y2, x3, y3
+        FROM triangles
+        ORDER BY ABS(0.5 * ABS(x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) - ?) 
+        LIMIT 1
+    """;
         try (PreparedStatement pstmt = connection.prepareStatement(querySQL)) {
             pstmt.setFloat(1, targetArea);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                return new Triangle(rs.getFloat("x1"), rs.getFloat("y1"), rs.getFloat("x2"), rs.getFloat("y2"), rs.getFloat("x3"), rs.getFloat("y3"));
+                return new Triangle(
+                        rs.getFloat("x1"), rs.getFloat("y1"),
+                        rs.getFloat("x2"), rs.getFloat("y2"),
+                        rs.getFloat("x3"), rs.getFloat("y3")
+                );
             }
         }
         return null;
     }
+
+
 
     public List<Triangle> getIsoscelesTriangles() throws SQLException {
         return getTrianglesByType("isosceles");
@@ -96,10 +103,11 @@ public class TriangleDatabase {
 
     public List<Triangle> getTrianglesCloseToSumArea(float targetArea) throws SQLException {
         String querySQL = """
-            SELECT x1, y1, x2, y2, x3, y3
-            FROM triangles
-            ORDER BY ABS(SUM(0.5 * Math.abs(x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2))) - ?) LIMIT 5
-        """;
+        SELECT x1, y1, x2, y2, x3, y3
+        FROM triangles
+        ORDER BY ABS(0.5 * ABS(x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) - ?) 
+        LIMIT 1
+    """;
         List<Triangle> triangles = new ArrayList<>();
         try (PreparedStatement pstmt = connection.prepareStatement(querySQL)) {
             pstmt.setFloat(1, targetArea);
@@ -119,22 +127,31 @@ public class TriangleDatabase {
 
     public List<Triangle> getObtuseTrianglesWithAreaGreaterThan(float area) throws SQLException {
         String querySQL = """
-            SELECT x1, y1, x2, y2, x3, y3 FROM triangles
-            WHERE 0.5 * ABS(x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) > ?
-            AND isObtuse(x1, y1, x2, y2, x3, y3) = true
+        SELECT x1, y1, x2, y2, x3, y3 FROM triangles
+        WHERE 0.5 * ABS(x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) > ?
         """;
         List<Triangle> triangles = new ArrayList<>();
         try (PreparedStatement pstmt = connection.prepareStatement(querySQL)) {
             pstmt.setFloat(1, area);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
-                triangles.add(new Triangle(rs.getFloat("x1"), rs.getFloat("y1"),
-                        rs.getFloat("x2"), rs.getFloat("y2"),
-                        rs.getFloat("x3"), rs.getFloat("y3")));
+                float x1 = rs.getFloat("x1");
+                float y1 = rs.getFloat("y1");
+                float x2 = rs.getFloat("x2");
+                float y2 = rs.getFloat("y2");
+                float x3 = rs.getFloat("x3");
+                float y3 = rs.getFloat("y3");
+                float a2 = (x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1); // Сторона a
+                float b2 = (x3 - x2) * (x3 - x2) + (y3 - y2) * (y3 - y2); // Сторона b
+                float c2 = (x1 - x3) * (x1 - x3) + (y1 - y3) * (y1 - y3); // Сторона c
+                if (a2 + b2 <= c2 || a2 + c2 <= b2 || b2 + c2 <= a2) {
+                    triangles.add(new Triangle(x1, y1, x2, y2, x3, y3));
+                }
             }
         }
         return triangles;
     }
+
 
     private List<Triangle> getTrianglesByType(String type) throws SQLException {
         String querySQL = """
