@@ -65,12 +65,29 @@ public class TriangleDatabase {
         return null;
     }
 
+
     public List<Triangle> getIsoscelesTriangles() throws SQLException {
         return getTrianglesByType("isosceles");
     }
 
     public List<Triangle> getEquilateralTriangles() throws SQLException {
         return getTrianglesByType("equilateral");
+    }
+
+    public List<Triangle> getTrianglesInCircumcircle(double radius) throws SQLException {
+        //
+    }
+
+    public List<Triangle> getTrianglesCloseToSumArea(float targetArea) throws SQLException {
+        //
+    }
+
+    public List<Triangle> getRightTriangles() throws SQLException {
+        //
+    }
+
+    public List<Triangle> getObtuseTrianglesWithAreaGreaterThan(float area) throws SQLException {
+        //
     }
 
     private List<Triangle> getTrianglesByType(String type) throws SQLException {
