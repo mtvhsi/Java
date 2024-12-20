@@ -5,11 +5,10 @@ import java.util.Locale;
 
 public abstract class Coffee implements Serializable {
     protected String name;
-    protected double weight; // вес в кг
-    protected double price; // цена в рублях
-    protected double volume; // объем в литрах
+    protected double weight; ///вес в кг
+    protected double price; ///цена в рублях
+    protected double volume; ///объем в литрах
 
-    // Поле static не будет сериализовано
     private static final long serialVersionUID = 1L;
 
     public Coffee(String name, double weight, double price, double volume) {
@@ -18,11 +17,9 @@ public abstract class Coffee implements Serializable {
         this.price = price;
         this.volume = volume;
     }
-
     public String getName() {
         return name;
     }
-
     public double getWeight() {
         return weight;
     }
@@ -39,7 +36,6 @@ public abstract class Coffee implements Serializable {
 
     @Override
     public String toString() {
-        // Указываем локаль для форматирования
         return String.format(Locale.US, "%s: %.2f кг, %.2f руб., Объем: %.2f л",
                 name, weight, price, volume);
     }

@@ -1,4 +1,5 @@
 package org.example.chapter_13;
+import java.util.Objects;
 
 public class Triangle {
     private float x1, y1, x2, y2, x3, y3;
@@ -10,6 +11,23 @@ public class Triangle {
         this.y2 = y2;
         this.x3 = x3;
         this.y3 = y3;
+    }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Triangle)) return false;
+        Triangle other = (Triangle) obj;
+        return Float.compare(other.x1, x1) == 0 &&
+                Float.compare(other.y1, y1) == 0 &&
+                Float.compare(other.x2, x2) == 0 &&
+                Float.compare(other.y2, y2) == 0 &&
+                Float.compare(other.x3, x3) == 0 &&
+                Float.compare(other.y3, y3) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x1, y1, x2, y2, x3, y3);
     }
 
     public float getX1() { return x1; }
