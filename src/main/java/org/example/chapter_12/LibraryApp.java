@@ -1,4 +1,5 @@
 package org.example.chapter_12;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
@@ -12,7 +13,7 @@ class Book {
     private final Semaphore semBook;
     private boolean otslez;
 
-    public Book(String title, boolean canTakeHome){
+    public Book(String title, boolean canTakeHome) {
         this.title = title;
         this.canTakeHome = canTakeHome;
         this.semBook = new Semaphore(1, true);
@@ -22,6 +23,7 @@ class Book {
     public String getTitle() {
         return title;
     }
+
     public boolean canTakeHome() {
         return canTakeHome;
     }
@@ -30,13 +32,20 @@ class Book {
         return semBook;
     }
 
-    public boolean setOtslez(boolean otsl){
-        this.otslez = otsl;
-        return otsl;
+    public void setTaken(boolean taken) {
+        this.otslez = taken;
     }
 
-    public boolean otslez(){
+    public boolean otslez() {
         return otslez;
+    }
+
+    public void acquireBook() throws InterruptedException {
+        semBook.acquire();
+    }
+
+    public void releaseBook() {
+        semBook.release();
     }
 }
 
@@ -57,12 +66,12 @@ class Library {
 
         semRead.acquire();
         try {
-            b.getSemBook().acquire();
+            b.acquireBook();
             try {
                 System.out.println(Thread.currentThread().getName() + " читает книгу в читальном зале: " + b.getTitle());
                 TimeUnit.SECONDS.sleep(1);
             } finally {
-                b.getSemBook().release();
+                b.releaseBook();
             }
         } finally {
             semRead.release();
@@ -72,13 +81,13 @@ class Library {
     public void takeHome(Book b) throws InterruptedException {
         if (b.canTakeHome()) {
             if (!b.otslez()) {
-                b.getSemBook().acquire();
+                b.acquireBook();
                 try {
-                    b.setOtslez(true);
+                    b.setTaken(true);
                     System.out.println(Thread.currentThread().getName() + " взял книгу на руки: " + b.getTitle());
                     TimeUnit.SECONDS.sleep(2);
                 } finally {
-                    b.getSemBook().release();
+                    b.releaseBook();
                 }
             } else {
                 System.out.println(Thread.currentThread().getName() + " не может взять книгу " + b.getTitle() + " на руки, она уже занята.");
@@ -88,9 +97,6 @@ class Library {
         }
     }
 }
-
-
-
 
 class User implements Runnable {
     private final Library lib;
@@ -121,8 +127,8 @@ public class LibraryApp {
     public static void main(String[] args) {
         List<Book> books = new ArrayList<>();
         books.add(new Book("Книга 1", true));
-        books.add(new Book("Книга 2",true));
-        books.add(new Book("Книга 3",true));
+        books.add(new Book("Книга 2", true));
+        books.add(new Book("Книга 3", true));
         books.add(new Book("Книга 4", true));
 
         Library lib = new Library(books, 2);
