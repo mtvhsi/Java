@@ -16,11 +16,14 @@ public class PhoneDirectory {
         phoneRecords.add("j89995525566 user5");
 
 
+        metodsPhone(phoneRecords);
+    }
+    public static void metodsPhone(List<String> phoneRecords) {
         File directory = new File("PhoneRecords");
         if (!directory.exists()) {
             directory.mkdir();
         }
-        File file = new File(directory, "filtered_phone_records.txt");
+        File file = new File(directory, "phone.txt");
         try (FileWriter writer = new FileWriter(file)) {
             for (String record : phoneRecords) {
                 if (record.startsWith("k") || record.startsWith("j")) {
