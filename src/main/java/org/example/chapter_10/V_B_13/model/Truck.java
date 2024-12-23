@@ -9,13 +9,10 @@ import java.util.List;
 public class Truck implements Serializable {
     private List<Coffee> coffeeList;
 
-    // Поле static не будет сериализовано
     private static final long serialVersionUID = 1L;
-
     public Truck() {
         this.coffeeList = new ArrayList<>();
     }
-
     public void loadCoffee(Coffee coffee) {
         coffeeList.add(coffee);
     }
@@ -37,8 +34,6 @@ public class Truck implements Serializable {
     public void displayCoffee() {
         coffeeList.forEach(System.out::println);
     }
-
-    // Метод для сериализации
     public void saveToFile(String fileName) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileName))) {
             oos.writeObject(this);
@@ -47,7 +42,6 @@ public class Truck implements Serializable {
         }
     }
 
-    // Метод для десериализации
     public static Truck loadFromFile(String fileName) {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName))) {
             return (Truck) ois.readObject();
