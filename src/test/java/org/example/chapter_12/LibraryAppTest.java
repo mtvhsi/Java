@@ -9,7 +9,7 @@ import java.util.concurrent.Semaphore;
 class BookTest {
     @Test
     void testGetTitle() {
-        Book book = new Book("Test Book");
+        Book book = new Book("Test Book", true);
         assertEquals("Test Book", book.getTitle());
     }
 }
@@ -21,9 +21,9 @@ class LibraryTest {
     @BeforeEach
     void setUp() {
         books = new ArrayList<>();
-        books.add(new Book("Book 1"));
-        books.add(new Book("Book 2"));
-        library = new Library(books, 2, 2);
+        books.add(new Book("книга 1", true));
+        books.add(new Book("книга 2",false));
+        library = new Library(books, 2);
     }
 
     @Test
